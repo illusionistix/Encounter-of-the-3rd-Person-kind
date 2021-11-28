@@ -3,7 +3,18 @@
 --- !u!78 &1
 TagManager:
   serializedVersion: 2
-  tags: []
+  tags:
+  - Launchable
+  - GroundPlane
+  - WelcomeInfo
+  - SecretInfo
+  - JetInfo
+  - CarInfo
+  - LimitsInfo
+  - Projectile
+  - Hazard
+  - Animaly
+  - Mirror
   layers:
   - Default
   - TransparentFX
