@@ -20,10 +20,13 @@ public class PlayerCharacter : MonoBehaviour
 
     [SerializeField] private Projectile projectilePrefab;
     private Projectile projectile;
+    
     [SerializeField] private Transform camBoomTransform;
     [SerializeField] private Transform camTransform;
+
     [SerializeField] private Transform projectileSpawnPos;
     [SerializeField] private Transform projectileSpawnRoot;
+
     [SerializeField] private Transform LaunchStartPos;
     [SerializeField] private Transform legRTransform;
 
@@ -35,12 +38,18 @@ public class PlayerCharacter : MonoBehaviour
     private Animator playerAnimator;
     //private bool isOnGround;
     private bool isCharacterMoving;
+
+    private bool isJumping;
+    private bool canJump;
+
     private bool isCharacterDashing;
     private bool isCharacterFloatingUp;
     private bool isZeroGravity;
+
     private Vector3 projectileHitPosition;
     private Vector3 hitDirection;
     //private Vector3 enterJetPosition;
+
     private Quaternion projectileHitRotation;
     private float distanceDelayFactor;
     //private float projectileFrequency;
@@ -84,6 +93,7 @@ public class PlayerCharacter : MonoBehaviour
         playerRb = GetComponent<Rigidbody>();        
         //isOnGround = true;
         isCharacterMoving = false;
+        isJumping = false;
         isCharacterDashing = false;
         isCharacterFloatingUp = false;
         isZeroGravity = false;
@@ -231,7 +241,8 @@ public class PlayerCharacter : MonoBehaviour
             }
             else
             {
-                transform.rotation = camBoomTransform.rotation;                
+                transform.rotation = new Quaternion(transform.rotation.x, camBoomTransform.rotation.y,
+                    transform.rotation.z, camBoomTransform.rotation.w);//camBoomTransform.rotation;                
             }
 
             transform.Translate(Vector3.forward * Time.deltaTime * playerSpeed);
@@ -559,13 +570,40 @@ public class PlayerCharacter : MonoBehaviour
     }
 
 
+    IEnumerator JumpTimer()
+    {
+        yield return new WaitForSeconds(0.5f);
+
+        //playerAnimator.SetBool("Jump_b", false);
+        isJumping = false;
+    }
+
+
     private void Jump()
     {
-        if (Input.GetKeyDown(KeyCode.Space) && MainManager.Instance.isPlayerOnGround)//|| Input.GetKeyDown(KeyCode.Joystick1Button2))
+        if (Input.GetKey(KeyCode.Space)) //|| Input.GetKeyDown(KeyCode.Joystick1Button2))
+        {
+            if (canJump)
+            {
+                isJumping = true;
+                canJump = false;
+
+                StartCoroutine(JumpTimer());
+            }
+        }
+        else
+        {
+            if (MainManager.Instance.isPlayerOnGround)
+            {   
+                canJump = true;                
+            }
+
+            isJumping = false;
+        }
+
+        if (isJumping)
         {
             playerAnimator.SetBool("Jump_b", true);
-            StartCoroutine(JumpTimer());
-            MainManager.Instance.isPlayerOnGround = false;
 
             if (Mathf.Abs(hInput) > 0 || Mathf.Abs(vInput) > 0)
             {
@@ -575,19 +613,9 @@ public class PlayerCharacter : MonoBehaviour
             {
                 playerRb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
             }
-
         }
-        
-    }
+    }   
 
-
-    IEnumerator JumpTimer()
-    {
-        yield return new WaitForSeconds(0.5f);
-        
-        playerAnimator.SetBool("Jump_b", false);
-        
-    }
 
 
     private void Dash()
@@ -950,8 +978,15 @@ public class PlayerCharacter : MonoBehaviour
             MainManager.Instance.isPlayerOnGround = true;
             playerAnimator.SetBool("Jump_b", false);            
         }
-    
     }
 
+
+    private void OnCollisionExit(Collision collision)
+    {
+        if (collision.gameObject.CompareTag("Ground"))
+        {
+            MainManager.Instance.isPlayerOnGround = false;
+        }
+    }
 
 }

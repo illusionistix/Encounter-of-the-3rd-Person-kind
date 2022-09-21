@@ -1,13 +1,20 @@
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor.UIElements;
 using UnityEngine;
 using UnityEngine.UI;
+
 
 public class CameraBoom : MonoBehaviour
 {
     [SerializeField] private Slider mouseSensitivitySlider;
 
     [SerializeField] private Transform playerCamTransform;
+    [SerializeField] private Vector3 camOffset;
+
+    [SerializeField] private Transform playerTransform;
+    [SerializeField] private Transform yRotatorTransform;
+
     [SerializeField] private Rigidbody playerObjectRbd;
     [SerializeField] private Rigidbody jetObjectRbd;
 
@@ -15,24 +22,26 @@ public class CameraBoom : MonoBehaviour
     //private Vector3 startPos;
 
     private float camVerticalAngle;
-    //private bool isAlternateCamPos;
+    private bool isAlternateCamPos;
 
-    // Start is called before the first frame update
+    
     void Start()
     {
         //isJetCamIntro = false;
         camVerticalAngle = 0;
-        //isAlternateCamPos = false;
+        isAlternateCamPos = false;
         mouseSensitivitySlider.value = 1f;
     }
 
-    // Update is called once per frame
+    
     void Update()
     {
         MainManager.Instance.mouseSensitivity = mouseSensitivitySlider.value;
 
         if (MainManager.Instance.isGameActive)
         {
+            SwitchView();
+
             if (MainManager.Instance.isPlayerInJet)
             {
                 UseJetCamBoom();
@@ -59,6 +68,25 @@ public class CameraBoom : MonoBehaviour
     }
 
 
+    private void SwitchView()
+    {
+        if (Input.GetKeyDown(KeyCode.X) || Input.GetKeyDown(KeyCode.R))
+        {
+            if (!isAlternateCamPos)
+            {
+                isAlternateCamPos = true;
+                camOffset.x = -3;
+            }
+            else
+            {
+                isAlternateCamPos = false;
+                camOffset.x = 3;
+            }
+        }
+    }
+
+
+
     private void UsePlayerCamBoom()
     {
         float mousePosX = Input.GetAxisRaw("Mouse X");
@@ -66,27 +94,21 @@ public class CameraBoom : MonoBehaviour
 
         MainManager.Instance.mouseSensitivity = Mathf.Clamp(MainManager.Instance.mouseSensitivity, 0.1f, 2f);
 
-        transform.Rotate(new Vector3(0f, mousePosX * MainManager.Instance.mouseSensitivity, 0f));
+        transform.position = playerTransform.position + new Vector3(0f, 5f, 0f);
+        transform.Rotate(0f, mousePosX * MainManager.Instance.mouseSensitivity, 0f);
 
         camVerticalAngle += mousePosY * MainManager.Instance.mouseSensitivity;
-        camVerticalAngle = Mathf.Clamp(camVerticalAngle, -89f, 89f);
+        camVerticalAngle = Mathf.Clamp(camVerticalAngle, -45f, 25f);
 
-        playerCamTransform.localEulerAngles = new Vector3(-camVerticalAngle, 0, 0);
-        playerCamTransform.localPosition = new Vector3(3f, 7f, -12.5f);
+        yRotatorTransform.localEulerAngles = new Vector3(-camVerticalAngle, 0f, 0f);
 
-        transform.position = playerObjectRbd.transform.position;
-
-        //transform.position = Vector3.Lerp(transform.position, playerObjectTransform.position, Time.deltaTime * 4f);        
+        playerCamTransform.localPosition = camOffset + new Vector3(0f, 0f, (camVerticalAngle + 30f) * 0.015f);
     }
 
-    
+
 
     private void UseJetCamBoom()
     {
-        //transform.SetParent(jetObjectTransform);
-        
-        //transform.localPosition = new Vector3(0f, 5f, -15f);        
-
         playerCamTransform.localPosition = new Vector3(0f, 12f, -40f);
         Vector3 targetDir = jetObjectRbd.transform.position - playerCamTransform.position;
         playerCamTransform.rotation = Quaternion.LookRotation(targetDir);

@@ -15,6 +15,7 @@ TagManager:
   - Hazard
   - Animaly
   - Mirror
+  - Ground
   layers:
   - Default
   - TransparentFX

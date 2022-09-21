@@ -60,7 +60,8 @@ public class MainManager : MonoBehaviour
     public float soundFXVolume { get { return m_soundFXVolume; } set { m_soundFXVolume = value; } }    
     public float ambienceVolume { get { return m_ambienceVolume; } set { m_ambienceVolume = value; } }    
     public float mouseSensitivity { get { return m_mouseSensitivity; } set { m_mouseSensitivity = value; } }    
-    public int score { get { return m_score; } set { m_score = value; } }    
+    public int score { get { return m_score; } set { m_score = value; } }
+
     public float energy
     {
         get { return m_energy; }
@@ -97,7 +98,8 @@ public class MainManager : MonoBehaviour
 
     private void Start()
     {
-        
+        //QualitySettings.vSyncCount = 0;
+        Application.targetFrameRate = 60;
     }
 
     private void Update()

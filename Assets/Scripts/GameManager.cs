@@ -238,7 +238,7 @@ public class GameManager : MonoBehaviour
 
     private void UpdateScoreText()
     {
-        scoreText.text = "" + MainManager.Instance.score;
+        scoreText.text = Mathf.RoundToInt(Mathf.Ceil(1 / Time.unscaledDeltaTime)).ToString();// MainManager.Instance.score;
     }
 
     private void UpdateEnergyBar()
