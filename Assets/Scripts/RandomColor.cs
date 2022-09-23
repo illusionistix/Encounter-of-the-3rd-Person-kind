@@ -1,37 +1,117 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Net.NetworkInformation;
 using UnityEngine;
 
 public class RandomColor : MonoBehaviour
 {
 
     private MeshRenderer tintRenderer;
-    private int tintMaterialSlot;
+    private SkinnedMeshRenderer tintRenderer1;
 
-    // Start is called before the first frame update
+    private Color randomColor;
+
+    [SerializeField] private bool shiftHue = false;
+
+    private float sign;
+
+    //private float randomOffset;
+    private float randomSpeedFactor;
+
+
+
     void Start()
     {
-        tintRenderer = GetComponent<MeshRenderer>();
-        tintMaterialSlot = 0;
-        float rangeR = Random.Range(0.1f, 255f);
-        float rangeG = Random.Range(0.1f, 255f);
-        float rangeB = Random.Range(0.1f, 255f);
-        Color randomColor = new Color(50f, 120f, 0f);
+        randomSpeedFactor = Random.Range(0.2f, 1.9f);
+
+        sign = 1;
+
+        if (GetComponent<MeshRenderer>() != null)
+        {
+            tintRenderer = GetComponent<MeshRenderer>();
+        }
+
+        if (GetComponent<SkinnedMeshRenderer>() != null)
+        {
+            tintRenderer1 = GetComponent<SkinnedMeshRenderer>();
+        }
+
+        float rangeR = Random.Range(0.1f, 1f);
+        float rangeG = Random.Range(0.1f, 1f);
+        float rangeB = Random.Range(0.1f, 1f);
+
+        randomColor = new Color(rangeR, rangeG, rangeB);
+        
         SetColor(randomColor);
     }
 
-    // Update is called once per frame
+    
     void Update()
     {
-        
+        if (shiftHue)
+        {
+            ShiftColorHue();
+        }
     }
 
     
-    public void SetColor(Color c)
+    private void SetColor(Color c)
     {
-        var prop = new MaterialPropertyBlock();
-        prop.SetColor("_BaseColor", c);
-        tintRenderer.SetPropertyBlock(prop, tintMaterialSlot);
+        if (tintRenderer != null)
+        {
+            tintRenderer.materials[0].color = c;
+        }
+
+        if (tintRenderer1 != null)
+        {
+            tintRenderer1.materials[0].color = c;
+        }
+    }
+
+
+    private void ShiftColorHue()
+    {
+        if (tintRenderer != null)
+        {
+            float r = tintRenderer.materials[0].color.r;
+            float g = tintRenderer.materials[0].color.g;
+            float b = tintRenderer.materials[0].color.b;
+
+            if (r < 0.2f)
+            {
+                sign = 1;
+            }
+            
+            if (r > 0.8f)
+            {
+                sign = -1;
+            }
+            
+
+            tintRenderer.materials[0].color = new Color(r + ((Time.deltaTime) * randomSpeedFactor) * sign,
+                g, b, 1f);
+        }
+
+        if (tintRenderer1 != null)
+        {
+            float r = tintRenderer1.materials[0].color.r;
+            float g = tintRenderer1.materials[0].color.g;
+            float b = tintRenderer1.materials[0].color.b;
+
+            if (r < 0.2f)
+            {
+                sign = 1;
+            }
+
+            if (r > 0.8f)
+            {
+                sign = -1;
+            }
+
+
+            tintRenderer1.materials[0].color = new Color(r + Time.deltaTime * 0.1f * sign,
+                g, b, 1f);
+        }
     }
     
 }

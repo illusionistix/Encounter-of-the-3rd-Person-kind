@@ -21,6 +21,9 @@ public class GameManager : MonoBehaviour
     //private GameObject woodPlankStatic;
     //private GameObject woodPlankDynamic;
 
+    [SerializeField] private GameObject cubesSmall;
+    //private GameObject cubesSmallInstance;
+
     [SerializeField] private GameObject playerPrefab;
     [SerializeField] private GameObject hoverBoardPrefab;
     private GameObject hoverBoard;
@@ -57,6 +60,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] private float freq;
     [SerializeField] private float fac;
 
+    [SerializeField] private bool spawnBaddies = false;
 
     //[SerializeField] private GameObject cubeObstacleStatic;
 
@@ -100,8 +104,23 @@ public class GameManager : MonoBehaviour
 
         boardRenderers[0].gameObject.SetActive(true);
 
-        SpawnHazards();        
+        if (spawnBaddies)
+        {
+            SpawnHazards();
+        }
 
+        for (int i = 0; i < 5; i++)
+        {
+            Vector3 cubesPos = new Vector3(10f, (2f + i * 2), 10f);
+            Vector3 cubesRotation = new Vector3(0f, i * 45f, 0f);
+            Vector3 cubesScale = new Vector3(2 - i * 0.2f, 2 - i * 0.2f, 2 - i * 0.2f);
+
+            cubesSmall.transform.eulerAngles = cubesRotation;
+
+            cubesSmall.transform.localScale = cubesScale;
+
+            Instantiate(cubesSmall, cubesPos, cubesSmall.transform.rotation);
+        }
     }
 
 
@@ -238,7 +257,7 @@ public class GameManager : MonoBehaviour
 
     private void UpdateScoreText()
     {
-        scoreText.text = Mathf.RoundToInt(Mathf.Ceil(1 / Time.unscaledDeltaTime)).ToString();// MainManager.Instance.score;
+        scoreText.text = Mathf.CeilToInt(Mathf.Ceil(1 / Time.unscaledDeltaTime)).ToString();// MainManager.Instance.score;
     }
 
     private void UpdateEnergyBar()

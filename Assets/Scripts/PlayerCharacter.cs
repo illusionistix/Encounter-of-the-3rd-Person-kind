@@ -593,12 +593,12 @@ public class PlayerCharacter : MonoBehaviour
         }
         else
         {
+            isJumping = false;
+
             if (MainManager.Instance.isPlayerOnGround)
             {   
-                canJump = true;                
+                canJump = true;
             }
-
-            isJumping = false;
         }
 
         if (isJumping)
@@ -973,11 +973,19 @@ public class PlayerCharacter : MonoBehaviour
 
     private void OnCollisionEnter(Collision collision)
     {
+        if (collision.gameObject.CompareTag("Ground"))
+        {
+            MainManager.Instance.isPlayerOnGround = true;
+            playerAnimator.SetBool("Jump_b", false);
+        }
+
+        /*
         if (Vector3.Dot(collision.GetContact(0).normal, Vector3.up) > 0.75f)
         {
             MainManager.Instance.isPlayerOnGround = true;
             playerAnimator.SetBool("Jump_b", false);            
         }
+        */
     }
 
 

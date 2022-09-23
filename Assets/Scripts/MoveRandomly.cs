@@ -9,7 +9,7 @@ public class MoveRandomly : MonoBehaviour
     private float range;
     private Vector3 targetPos;
 
-    // Start is called before the first frame update
+    
     void Start()
     {
         targetObject = MainManager.Instance.playerObject;
@@ -17,35 +17,37 @@ public class MoveRandomly : MonoBehaviour
         GetRandomLocation();
     }
 
-    // Update is called once per frame
+    
     void Update()
     {
         if (MainManager.Instance.isGameActive)
         {
+            //transform.position = Vector3.Lerp(transform.position, targetPos, Time.deltaTime * 0.5f);
+            //transform.Translate((targetPos - transform.position).normalized * Time.deltaTime * 10f);
+            //transform.position += new Vector3(0f, Mathf.Sin(Time.time) * 0.1f, 0f);
 
-            transform.Translate((targetPos - transform.position).normalized * Time.deltaTime * 10f);
-
-            if (Vector3.Distance(targetPos, transform.position) < 0.1f)
+            if (Vector3.Distance(targetPos, transform.position) < 1f)
             {
                 GetRandomLocation();
             }
-
-            if (transform.position.y < 1.5f)
+            else if (transform.position.y < 1.5f)
             {
                 transform.position = new Vector3(transform.position.y, 1.5f, transform.position.z);
                 GetRandomLocation();
             }
-
-            if (Vector3.Distance(transform.position, targetObject.transform.position) < 25f)
+            else if (Vector3.Distance(transform.position, targetObject.GetComponent<Rigidbody>().transform.position) < 50f)
             {
-                transform.position = Vector3.Lerp(transform.position, targetObject.transform.position, Time.deltaTime * 25f);
+                transform.position = Vector3.Lerp(transform.position, targetObject.GetComponent<Rigidbody>().transform.position + new Vector3(0f, 3f, 0f), Time.deltaTime * 5f);
+            }
+            else
+            {
+                transform.position = Vector3.Lerp(transform.position, targetPos, Time.deltaTime * 0.5f);
             }
 
         }
-        
-    }    
-    
-    
+    }
+
+
     void GetRandomLocation()
     {
         range = Random.Range(-10f, 10f);        

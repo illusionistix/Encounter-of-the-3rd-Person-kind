@@ -75,12 +75,12 @@ public class CameraBoom : MonoBehaviour
             if (!isAlternateCamPos)
             {
                 isAlternateCamPos = true;
-                camOffset.x = -3;
+                camOffset.x = -1.5f;
             }
             else
             {
                 isAlternateCamPos = false;
-                camOffset.x = 3;
+                camOffset.x = 1.5f;
             }
         }
     }
@@ -98,11 +98,11 @@ public class CameraBoom : MonoBehaviour
         transform.Rotate(0f, mousePosX * MainManager.Instance.mouseSensitivity, 0f);
 
         camVerticalAngle += mousePosY * MainManager.Instance.mouseSensitivity;
-        camVerticalAngle = Mathf.Clamp(camVerticalAngle, -45f, 25f);
+        camVerticalAngle = Mathf.Clamp(camVerticalAngle, -60f, 60f);
 
         yRotatorTransform.localEulerAngles = new Vector3(-camVerticalAngle, 0f, 0f);
 
-        playerCamTransform.localPosition = camOffset + new Vector3(0f, 0f, (camVerticalAngle + 30f) * 0.015f);
+        playerCamTransform.localPosition = camOffset + new Vector3(0f, 0f, ((camVerticalAngle + 35f) * camVerticalAngle) * 0.001f);
     }
 
 

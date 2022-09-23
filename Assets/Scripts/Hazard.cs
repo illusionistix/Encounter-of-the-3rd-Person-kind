@@ -8,13 +8,13 @@ public class Hazard : MonoBehaviour
     [SerializeField] private ParticleSystem hazardPsPrefab;
     private ParticleSystem hazardPs;    
 
-    // Start is called before the first frame update
+    
     void Start()
     {
         
     }
 
-    // Update is called once per frame
+    
     void Update()
     {
         if (transform.position.y < 2f)
