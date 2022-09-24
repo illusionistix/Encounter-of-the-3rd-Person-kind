@@ -44,7 +44,7 @@ public class PlayerCharacter : MonoBehaviour
 
     private bool isCharacterDashing;
     private bool isCharacterFloatingUp;
-    private bool isZeroGravity;
+    //private bool isZeroGravity;
 
     private Vector3 projectileHitPosition;
     private Vector3 hitDirection;
@@ -75,9 +75,9 @@ public class PlayerCharacter : MonoBehaviour
         Physics.gravity = new Vector3(0f, -9.8f, 0f) * gravityModifier;
     }
 
-    // Start is called before the first frame update
+    
     void Start()
-    {
+    {   
         //projectileShotAudio.volume = 0.05f;
         //launchActiveAudio.volume = 0.1f;
         //launchShotAudio.volume = 0.75f;
@@ -96,7 +96,7 @@ public class PlayerCharacter : MonoBehaviour
         isJumping = false;
         isCharacterDashing = false;
         isCharacterFloatingUp = false;
-        isZeroGravity = false;
+        //isZeroGravity = false;
         isLaunchActive = false;
         isKeyDown = false;
         //Physics.gravity *= gravityModifier;
@@ -107,7 +107,7 @@ public class PlayerCharacter : MonoBehaviour
     }
     
 
-    // Update is called once per frame
+    
     void Update()
     {
         
@@ -116,37 +116,39 @@ public class PlayerCharacter : MonoBehaviour
 
             if (!MainManager.Instance.isPlayerInJet)
             {
-                hInput = Input.GetAxis("Horizontal");
-                vInput = Input.GetAxis("Vertical");
+                //hInput = Input.GetAxis("Horizontal");
+                //vInput = Input.GetAxis("Vertical");
 
                 projectileShotAudio.volume = (MainManager.Instance.soundFXVolume * 0.05f) * 5;
                 launchActiveAudio.volume = (MainManager.Instance.soundFXVolume * 0.1f) * 5;
                 launchShotAudio.volume = (MainManager.Instance.soundFXVolume * 0.75f) * 5;
 
+                /*
                 if (!MainManager.Instance.isPlayerOnGround)
                 {
-                    playerRb.drag = playerRb.velocity.magnitude / 10f;
+                    playerRb.drag = playerRb.velocity.magnitude / 30f;
 
                     if (isZeroGravity)
                     {
-                        playerRb.drag = playerRb.velocity.magnitude / 7.5f;
+                        playerRb.drag = playerRb.velocity.magnitude / 20f;
                     }
                 }
                 else
                 {
-                    playerRb.drag = playerRb.velocity.magnitude / 100f;
+                    playerRb.drag = playerRb.velocity.magnitude / 60f;
                 }
+                */
 
                 playerAnimator.enabled = true;
 
-                Walk();
-                FastWalk();
-                Jump();
-                Dash();
-                GoZeroGravity();
+                //Walk();
+                //FastWalk();
+                //Jump();
+                //Dash();
+                //GoZeroGravity();
                 //FireProjectileBasic();
                 FireProjectileHeavy();
-                Launch();                
+                //Launch();                
 
 
                 if (!MainManager.Instance.isPlayerOnGround)
@@ -224,6 +226,24 @@ public class PlayerCharacter : MonoBehaviour
 
 
 
+    private void FixedUpdate()
+    {
+        hInput = Input.GetAxis("Horizontal");
+        vInput = Input.GetAxis("Vertical");
+
+        if (MainManager.Instance.isGameActive)
+        {
+            Walk();
+            FastWalk();
+            Jump();
+            Dash();
+            Launch();
+            GoZeroGravity();
+        }
+    }
+
+
+
     private void Walk()
     {
 
@@ -245,7 +265,9 @@ public class PlayerCharacter : MonoBehaviour
                     transform.rotation.z, camBoomTransform.rotation.w);//camBoomTransform.rotation;                
             }
 
-            transform.Translate(Vector3.forward * Time.deltaTime * playerSpeed);
+            //transform.Translate(Vector3.forward * Time.deltaTime * playerSpeed);
+            playerRb.AddRelativeForce(Vector3.forward * playerSpeed, ForceMode.Impulse);
+
             isCharacterMoving = true;
 
             if (playerAnimator.GetBool("LaunchHoldIdle_b"))
@@ -284,9 +306,11 @@ public class PlayerCharacter : MonoBehaviour
             else
             {
                 transform.eulerAngles = new Vector3(0f, camBoomRotEuler.y + 180f, 0f);                
-            }            
+            }
 
-            transform.Translate(Vector3.forward * Time.deltaTime * playerSpeed);
+            //transform.Translate(Vector3.forward * Time.deltaTime * playerSpeed);
+            playerRb.AddRelativeForce(Vector3.forward * playerSpeed, ForceMode.Impulse);
+
             isCharacterMoving = true;
 
             if (playerAnimator.GetBool("LaunchHoldIdle_b"))
@@ -315,7 +339,8 @@ public class PlayerCharacter : MonoBehaviour
         else if (Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.LeftArrow) || hInput < 0)
         {
             transform.eulerAngles = new Vector3(0f, camBoomRotEuler.y - 90f, 0f);
-            transform.Translate(Vector3.forward * Time.deltaTime * playerSpeed);
+            //transform.Translate(Vector3.forward * Time.deltaTime * playerSpeed);
+            playerRb.AddRelativeForce(Vector3.forward * playerSpeed, ForceMode.Impulse);
 
             isCharacterMoving = true;
 
@@ -345,7 +370,8 @@ public class PlayerCharacter : MonoBehaviour
         else if (Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.RightArrow) || hInput > 0)
         {
             transform.eulerAngles = new Vector3(0f, camBoomRotEuler.y + 90f, 0f);
-            transform.Translate(Vector3.forward * Time.deltaTime * playerSpeed);
+            //transform.Translate(Vector3.forward * Time.deltaTime * playerSpeed);
+            playerRb.AddRelativeForce(Vector3.forward * playerSpeed, ForceMode.Impulse);
 
             isCharacterMoving = true;
 
@@ -749,14 +775,14 @@ public class PlayerCharacter : MonoBehaviour
     IEnumerator ZeroGravityTimer()
     {
         playerRb.velocity = new Vector3(playerRb.velocity.x, 0f, playerRb.velocity.z);
-        isZeroGravity = true;
+        //isZeroGravity = true;
 
         yield return new WaitForSeconds(5);
 
         legLPs.Stop();
         legRPs.Stop();
         playerRb.useGravity = true;
-        isZeroGravity = false;
+        //isZeroGravity = false;
         isKeyDown = false;
     }
     

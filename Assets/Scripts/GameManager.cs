@@ -41,6 +41,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] private GameObject pauseMenu;
     [SerializeField] private GameObject optionsMenu;
     [SerializeField] private GameObject photoModeMenu;
+    [SerializeField] private GameObject mapScreen;
 
     [SerializeField] private GameObject barrelsPrefab;
     private GameObject barrels;    
@@ -232,7 +233,7 @@ public class GameManager : MonoBehaviour
             Physics.autoSimulation = false;            
         }
 
-        
+        ToggleMapScreen();
         TogglePauseMenuCanvas();        
         KeyToPauseMenu();
 
@@ -303,6 +304,26 @@ public class GameManager : MonoBehaviour
 
         barrelsInfoText.gameObject.SetActive(false);
     }*/
+
+
+    private void ToggleMapScreen()
+    {   
+        mapScreen.GetComponentsInChildren<Image>()[2].rectTransform.localPosition = new Vector3(MainManager.Instance.playerObject.transform.position.x,
+            MainManager.Instance.playerObject.transform.position.z, 0f);
+
+        if (Input.GetKeyDown(KeyCode.M) && MainManager.Instance.isGameActive)
+        {
+            if (mapScreen.activeSelf)
+            {
+                mapScreen.SetActive(false);
+            }
+            else
+            {
+                mapScreen.SetActive(true);
+            }
+        }
+    }
+
 
     public void TogglePauseMenuCanvas()
     {
