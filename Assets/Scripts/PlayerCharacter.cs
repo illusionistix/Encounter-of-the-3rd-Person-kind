@@ -69,6 +69,8 @@ public class PlayerCharacter : MonoBehaviour
     private float hInput;
     private float vInput;
 
+    //private Vector3 collisionNormal;
+
 
     private void Awake()
     {
@@ -78,6 +80,7 @@ public class PlayerCharacter : MonoBehaviour
     
     void Start()
     {   
+        //collisionNormal = new Vector3(0f, 0f, 0f);
         //projectileShotAudio.volume = 0.05f;
         //launchActiveAudio.volume = 0.1f;
         //launchShotAudio.volume = 0.75f;
@@ -246,26 +249,83 @@ public class PlayerCharacter : MonoBehaviour
 
     private void Walk()
     {
-
         Vector3 camBoomRotEuler = camBoomTransform.rotation.eulerAngles;
 
-        if (Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.UpArrow) || vInput > 0)
+        if (Mathf.Abs(hInput) > Mathf.Epsilon || Mathf.Abs(vInput) > Mathf.Epsilon)
         {
-            if (Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.RightArrow) || hInput > 0)
+            transform.forward = new Vector3(hInput, 0f, vInput);
+            transform.eulerAngles += new Vector3(0f, camBoomRotEuler.y, 0f);
+            playerRb.AddRelativeForce(Vector3.forward * playerSpeed, ForceMode.Impulse);
+
+            isCharacterMoving = true;
+
+            if (playerAnimator.GetBool("LaunchHoldIdle_b"))
             {
-                transform.eulerAngles = new Vector3(0f, camBoomRotEuler.y + 45f, 0f);
+                playerAnimator.SetBool("LaunchHoldWalk_b", true);
+                playerAnimator.SetBool("Walk_b", true);
+                playerAnimator.SetBool("LaunchHoldIdle_b", false);
             }
-            else if (Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.LeftArrow) || hInput < 0)
+            else
             {
-                transform.eulerAngles = new Vector3(0f, camBoomRotEuler.y - 45f, 0f);
+                playerAnimator.SetBool("Walk_b", true);
+            }
+
+            if (playerAnimator.GetBool("ShotIdle_b"))
+            {
+                playerAnimator.SetBool("ShotWalking_b", true);
+                playerAnimator.SetBool("Walk_b", true);
+                playerAnimator.SetBool("ShotIdle_b", false);
+            }
+            else
+            {
+                playerAnimator.SetBool("Walk_b", true);
+            }
+        }
+        else
+        {
+            isCharacterMoving = false;
+
+            if (playerAnimator.GetBool("Walk_b"))
+            {
+                playerAnimator.SetBool("Walk_b", false);
+            }
+
+            if (playerAnimator.GetBool("LaunchHoldWalk_b"))
+            {
+                playerAnimator.SetBool("LaunchHoldWalk_b", false);
+                playerAnimator.SetBool("LaunchHoldIdle_b", true);
+            }
+
+            if (playerAnimator.GetBool("ShotWalking_b"))
+            {
+                playerAnimator.SetBool("ShotWalking_b", false);
+                playerAnimator.SetBool("ShotIdle_b", true);
+            }
+        }
+
+        /*
+        Vector3 camBoomRotEuler = camBoomTransform.rotation.eulerAngles;
+
+        if (vInput > 0.9f)//Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.UpArrow) || vInput > 0)
+        {
+            if (hInput > 0.9f)//Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.RightArrow) || hInput > 0)
+            {
+                transform.forward = new Vector3(hInput, 0f, vInput);
+                //transform.eulerAngles = new Vector3(0f, camBoomRotEuler.y + 45f, 0f);
+            }
+            else if (hInput < -0.9f)//Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.LeftArrow) || hInput < 0)
+            {
+                transform.forward = new Vector3(hInput, 0f, vInput);
+                //transform.eulerAngles = new Vector3(0f, camBoomRotEuler.y - 45f, 0f);
             }
             else
             {
                 transform.rotation = new Quaternion(transform.rotation.x, camBoomTransform.rotation.y,
                     transform.rotation.z, camBoomTransform.rotation.w);//camBoomTransform.rotation;                
             }
-
+            
             //transform.Translate(Vector3.forward * Time.deltaTime * playerSpeed);
+            //playerRb.AddRelativeForce((Vector3.Cross(Vector3.right, collisionNormal)) * playerSpeed, ForceMode.Impulse);
             playerRb.AddRelativeForce(Vector3.forward * playerSpeed, ForceMode.Impulse);
 
             isCharacterMoving = true;
@@ -418,7 +478,7 @@ public class PlayerCharacter : MonoBehaviour
                 playerAnimator.SetBool("ShotIdle_b", true);
             }
         }
-        
+        */
 
     }
 
@@ -945,7 +1005,7 @@ public class PlayerCharacter : MonoBehaviour
                     if (hit.rigidbody != null)
                     {
                         hitObjectRb = hit.rigidbody;
-                        //hit.rigidbody.AddForce(hitDirection * 0.5f, ForceMode.Impulse);
+                        hit.rigidbody.AddForce(hitDirection * 0.5f, ForceMode.Impulse);
                     }
 
                     if (hit.collider.gameObject.CompareTag("Hazard"))
@@ -1003,6 +1063,8 @@ public class PlayerCharacter : MonoBehaviour
         {
             MainManager.Instance.isPlayerOnGround = true;
             playerAnimator.SetBool("Jump_b", false);
+
+            //collisionNormal = collision.GetContact(0).normal;
         }
 
         /*
